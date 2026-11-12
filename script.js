@@ -434,7 +434,110 @@ const HAB = [
 
 
 // ==========================================
-// 12. RENDER KEBIASAAN HEMAT
+// 12. STATE TERSIMPAN (SINKRON DASHBOARD ⇄ KALKULATOR)
+// ==========================================
+
+const STORE_KEY = "hemat";
+
+const STATE_DEFAULT = {
+    bill: 750000,
+    pct: 15,
+    tar: 1444.7,
+    devices: [
+        ["AC 1/2 PK", 500, 1, 8],
+        ["Kulkas 2 pintu", 100, 1, 24],
+        ["Televisi LED", 80, 1, 4],
+        ["Lampu LED", 12, 6, 7]
+    ],
+    habits: [true, true, false, false, true]
+};
+
+// Angka aman: pakai cadangan bila kosong / bukan angka / negatif
+const num = (v, fallback) => {
+
+    const n = Number(v);
+
+    return Number.isFinite(n) && n >= 0 ? n : fallback;
+
+};
+
+const clampPct = v =>
+    Math.min(40, Math.max(5, num(v, STATE_DEFAULT.pct)));
+
+function readState() {
+
+    let raw = null;
+
+    try {
+
+        raw = JSON.parse(localStorage.getItem(STORE_KEY));
+
+    } catch (e) {
+
+        raw = null;
+
+    }
+
+    const s = Object.assign(
+        {},
+        STATE_DEFAULT,
+        raw && typeof raw == "object" ? raw : {}
+    );
+
+    s.bill = num(s.bill, STATE_DEFAULT.bill);
+    s.pct = clampPct(s.pct);
+    s.tar = num(s.tar, STATE_DEFAULT.tar) || STATE_DEFAULT.tar;
+
+    s.devices =
+        Array.isArray(s.devices) && s.devices.length
+            ? s.devices.map(d => [
+                  String((d && d[0]) || "Perangkat"),
+                  num(d && d[1], 0),
+                  num(d && d[2], 1),
+                  num(d && d[3], 0)
+              ])
+            : STATE_DEFAULT.devices.map(d => d.slice());
+
+    s.habits =
+        Array.isArray(s.habits) && s.habits.length == HAB.length
+            ? s.habits.map(Boolean)
+            : STATE_DEFAULT.habits.slice();
+
+    return s;
+
+}
+
+const state = readState();
+
+function saveState() {
+
+    try {
+
+        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+
+    } catch (e) {}
+
+}
+
+// Satu rumus rupiah untuk semua halaman: dasar perhitungan adalah tagihan
+// bulanan dan target persen, bukan estimasi kWh perangkat.
+const savings = (bill, pct) => {
+
+    const hemat = bill * pct / 100;
+
+    return {
+        bill: bill,
+        pct: pct,
+        hemat: hemat,
+        after: bill - hemat,
+        year: hemat * 12
+    };
+
+};
+
+
+// ==========================================
+// 13. RENDER KEBIASAAN HEMAT
 // ==========================================
 
 $("hab").innerHTML = HAB
@@ -444,7 +547,7 @@ $("hab").innerHTML = HAB
             <input
                 type="checkbox"
                 data-i="${i}"
-                ${h[3] ? "checked" : ""}
+                ${state.habits[i] ? "checked" : ""}
             >
 
             <span>
@@ -462,19 +565,16 @@ $("hab").innerHTML = HAB
 
 
 // ==========================================
-// 13. DATA PERANGKAT RUMAH
+// 14. DATA PERANGKAT RUMAH
 // ==========================================
 
-let D = [
-    ["AC 1/2 PK", 500, 1, 8],
-    ["Kulkas 2 pintu", 100, 1, 24],
-    ["Televisi LED", 80, 1, 4],
-    ["Lampu LED", 12, 6, 7]
-];
+// Daftar perangkat dipakai bersama dengan state agar isinya tidak hilang
+// saat berpindah halaman.
+const D = state.devices;
 
 
 // ==========================================
-// 14. RENDER TABEL PERANGKAT
+// 15. RENDER TABEL PERANGKAT
 // ==========================================
 
 function rd() {
@@ -522,7 +622,7 @@ function rd() {
 
 
 // ==========================================
-// 15. KALKULASI LISTRIK
+// 16. KALKULASI LISTRIK
 // ==========================================
 
 function calc() {
@@ -572,27 +672,34 @@ function calc() {
     });
 
 
-    // Hasil simulasi tagihan
-    $("after").textContent = rp(bill * (1 - p));
+    // Hasil simulasi tagihan, semuanya memakai dasar tagihan + target %
+    // supaya angkanya sama dengan kartu di dashboard
+    const sim = savings(bill, +$("rng").value);
 
-    $("pot").textContent = rp(bill * p);
+    $("after").textContent = rp(sim.after);
 
-    $("after2").textContent = rp(T * tar * (1 - p));
+    $("pot").textContent = rp(sim.hemat);
 
-    $("yr").textContent = rp(T * tar * p * 12);
+    $("after2").textContent = rp(sim.after);
+
+    $("yr").textContent = rp(sim.year);
 
 
-    // Simpan hasil untuk dashboard (hanya di halaman kalkulator)
+    // Simpan seluruh isi kalkulator agar dashboard dan halaman ini
+    // selalu menampilkan angka yang sama (hanya di halaman kalkulator)
     if (document.getElementById("bill")) {
 
-        try {
+        // Nilai kosong tidak menimpa angka terakhir yang valid
+        if (bill > 0) state.bill = bill;
 
-            localStorage.setItem(
-                "hemat",
-                JSON.stringify({ bill: bill, pct: +$("rng").value })
-            );
+        if (tar > 0) state.tar = tar;
 
-        } catch (e) {}
+        state.pct = +$("rng").value;
+
+        state.habits = [...document.querySelectorAll("#hab input")]
+            .map(c => c.checked);
+
+        saveState();
 
     }
 
@@ -671,7 +778,7 @@ function calc() {
 
 
 // ==========================================
-// 16. EVENT TABEL PERANGKAT
+// 17. EVENT TABEL PERANGKAT
 // ==========================================
 
 $("tb").oninput = e => {
@@ -716,7 +823,7 @@ $("addb").onclick = () => {
 
 
 // ==========================================
-// 17. EVENT KEBIASAAN HEMAT
+// 18. EVENT KEBIASAAN HEMAT
 // ==========================================
 
 $("hab").onchange = () => {
@@ -741,7 +848,7 @@ $("hab").onchange = () => {
 
 
 // ==========================================
-// 18. EVENT TARGET DAN TARIF
+// 19. EVENT TARGET DAN TARIF
 // ==========================================
 
 ["rng", "tar", "bill"].forEach(i => {
@@ -752,16 +859,24 @@ $("hab").onchange = () => {
 
 
 // ==========================================
-// 19. INITIALIZE CALCULATOR
+// 20. INITIALIZE CALCULATOR (PULIHKAN NILAI TERSIMPAN)
 // ==========================================
+
+if (document.getElementById("bill")) {
+
+    // Form diisi dari state, bukan dari nilai default HTML, supaya
+    // angkanya tidak berubah saat kembali dari dashboard.
+    $("bill").value = state.bill;
+    $("tar").value = state.tar;
+    $("rng").value = state.pct;
+
+}
 
 rd();
 
-$("hab").onchange();
-
 
 // ==========================================
-// 20. FITUR PENCARIAN
+// 21. FITUR PENCARIAN
 // ==========================================
 
 $("q").onkeydown = e => {
@@ -783,21 +898,23 @@ $("q").onkeydown = e => {
 
 
 // ==========================================
-// 21. DATA KALKULATOR DI DASHBOARD
+// 22. DATA KALKULATOR DI DASHBOARD
 // ==========================================
 
-try {
+if (document.getElementById("d-bill")) {
 
-    const sv = JSON.parse(localStorage.getItem("hemat"));
+    // Sumber data dan rumus sama persis dengan halaman kalkulator,
+    // jadi angka di dashboard tidak pernah berbeda saat bolak-balik.
+    const sim = savings(state.bill, state.pct);
 
-    if (sv && document.getElementById("d-bill")) {
+    $("d-bill").textContent = rp(sim.bill);
 
-        $("d-bill").textContent = rp(sv.bill);
-        $("d-after").textContent = rp(sv.bill * (1 - sv.pct / 100));
-        $("d-yr").textContent = rp(sv.bill * sv.pct / 100 * 12);
-        $("d-p1").textContent = "dari tagihan awal ↓" + sv.pct + "%";
-        $("d-p2").textContent = "dengan target " + sv.pct + "%";
+    $("d-after").textContent = rp(sim.after);
 
-    }
+    $("d-yr").textContent = rp(sim.year);
 
-} catch (e) {}
+    $("d-p1").textContent = "dari tagihan awal ↓" + sim.pct + "%";
+
+    $("d-p2").textContent = "dengan target " + sim.pct + "%";
+
+}
