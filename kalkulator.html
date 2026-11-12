@@ -1,0 +1,414 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <title>Kalkulator · HematEnergi</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside>
+
+        <div class="logo">
+            <i>
+                <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#0e8a65"
+                    stroke-width="2"
+                    stroke-linejoin="round"
+                >
+                    <path d="M13 2 3 14h9l-1 8 10-12h-9z"/>
+                </svg>
+            </i>
+
+            <div>
+                <b>HematEnergi</b>
+                <small>Lebih irit, bumi lebih baik</small>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <a href="index.html">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>
+            </svg>
+            Dashboard
+        </a>
+
+        <a href="kalkulator.html" class="on">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="3" width="14" height="18" rx="2"/>
+                <path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/>
+            </svg>
+            Kalkulator
+        </a>
+
+        <a href="tips.html">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>
+            </svg>
+            Tips hemat
+        </a>
+
+        <a href="energi.html">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 19c0-9 5-14 14-14 0 9-5 14-14 14zM5 19c3-5 6-8 10-10"/>
+            </svg>
+            Energi Terbarukan
+        </a>
+
+        <!-- Sidebar Footer -->
+        <div class="foot">
+            <b>Mulai dari rumah</b>
+            Setiap kWh yang kamu hemat membantu bumi bernapas lebih lega.
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Topbar -->
+        <div class="top">
+
+            <input
+                id="q"
+                placeholder="Cari tips, kalkulator, atau informasi lainnya..."
+            >
+
+            <div class="me">
+                <i>DA</i>
+
+                <div>
+                    <span class="mu">Selamat datang</span>
+                    <br>
+                    <b>Warga!</b>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Calculator Page -->
+        <section class="pg on" id="kalkulator">
+
+            <!-- Hero Section -->
+            <div class="hero">
+
+                <span class="tag">🍃 Rencana hemat personal</span>
+
+                <h1 style="font-size: 32px; margin-top: 10px">
+                    Hitung listrikmu, temukan cara paling mudah untuk hemat.
+                </h1>
+
+                <p>
+                    Masukkan perangkat yang dipakai sehari-hari.
+                    Kami hitung estimasi biaya dan langkah realistis
+                    untuk target bulananmu.
+                </p>
+
+            </div>
+
+            <!-- Monthly Bill Simulation -->
+            <div
+                class="g2"
+                style="margin-top: 0; grid-template-columns: 1.2fr 1fr"
+            >
+
+                <div class="card">
+
+                    <h2>Simulasi tagihan bulanan</h2>
+
+                    <b style="font-size: 12px">
+                        Tagihan listrik bulanan (Rp)
+                    </b>
+
+                    <br><br>
+
+                    <input
+                        type="number"
+                        id="bill"
+                        value="750000"
+                    >
+
+                    <div class="hab" id="hab"></div>
+
+                    <p class="mu">
+                        Persentase kebiasaan adalah panduan simulasi.
+                        Hasil nyata bergantung pada perangkat, durasi,
+                        tarif, dan pola pemakaian.
+                    </p>
+
+                </div>
+
+                <!-- Simulation Results -->
+                <div class="card">
+
+                    <h2>
+                        Hasil simulasi
+
+                        <span
+                            class="tag"
+                            style="
+                                float: right;
+                                background: var(--soft);
+                                padding: 6px 12px;
+                                border-radius: 20px;
+                            "
+                            id="tg1"
+                        ></span>
+                    </h2>
+
+                    <div class="res">
+
+                        <div>
+                            <span class="mu">
+                                Estimasi tagihan setelah hemat
+                            </span>
+                            <b id="after"></b>
+                        </div>
+
+                        <div>
+                            <span class="mu">Potensi hemat</span>
+                            <b id="pot"></b>
+                        </div>
+
+                    </div>
+
+                    <p>
+                        <b>Target penghematan</b>
+
+                        <b
+                            id="tg2"
+                            style="float: right; color: var(--g2)"
+                        ></b>
+                    </p>
+
+                    <p class="mu" id="cnt"></p>
+
+                    <button
+                        class="btn"
+                        onclick="document.getElementById('dev').scrollIntoView({behavior:'smooth'})"
+                    >
+                        Lanjut ke kalkulator perangkat ↓
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Electricity Statistics -->
+            <div class="g3" style="margin-top: 16px">
+
+                <div class="card stat">
+                    <small>Estimasi pemakaian</small>
+                    <b id="kwh"></b>
+                    <small>per bulan</small>
+                </div>
+
+                <div class="card stat">
+                    <small>Estimasi tagihan</small>
+                    <b id="est"></b>
+                    <small>belum termasuk pajak/biaya lain</small>
+                </div>
+
+                <div class="card stat dk">
+                    <small>Potensi hemat</small>
+                    <b id="sv"></b>
+                    <small id="svk"></small>
+                </div>
+
+            </div>
+
+            <!-- Device Calculator -->
+            <div
+                class="g2"
+                style="grid-template-columns: 1.7fr 1fr"
+                id="dev"
+            >
+
+                <!-- Device Table -->
+                <div>
+
+                    <div class="card">
+
+                        <h2>Perangkat di rumah</h2>
+
+                        <div class="tw">
+
+                            <table>
+
+                                <thead>
+                                    <tr>
+                                        <th>Perangkat</th>
+                                        <th>Daya (W)</th>
+                                        <th>Jumlah</th>
+                                        <th>Jam/hari</th>
+                                        <th>kWh/bln</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="tb"></tbody>
+
+                            </table>
+
+                        </div>
+
+                        <br>
+
+                        <div style="display: flex; gap: 10px">
+
+                            <select id="add">
+
+                                <option value="Mesin cuci|400">
+                                    Mesin cuci — ±400 W
+                                </option>
+
+                                <option value="Kipas angin|50">
+                                    Kipas angin — ±50 W
+                                </option>
+
+                                <option value="Rice cooker|350">
+                                    Rice cooker — ±350 W
+                                </option>
+
+                                <option value="Setrika|350">
+                                    Setrika — ±350 W
+                                </option>
+
+                                <option value="Laptop|60">
+                                    Laptop — ±60 W
+                                </option>
+
+                                <option value="Pompa air|250">
+                                    Pompa air — ±250 W
+                                </option>
+
+                            </select>
+
+                            <button
+                                class="btn s"
+                                id="addb"
+                                style="white-space: nowrap"
+                            >
+                                + Tambah perangkat
+                            </button>
+
+                        </div>
+
+                        <p class="mu">
+                            Nilai watt adalah estimasi awal.
+                            Rumus: watt × jam × hari ÷ 1.000.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- Saving Target and Electricity Tariff -->
+                <div>
+
+                    <div class="card">
+
+                        <h2>
+                            Target penghematan
+
+                            <b
+                                style="
+                                    float: right;
+                                    color: var(--g2);
+                                    font-size: 24px;
+                                "
+                                id="tg3"
+                            ></b>
+                        </h2>
+
+                        <input
+                            type="range"
+                            id="rng"
+                            min="5"
+                            max="40"
+                            value="15"
+                            style="width: 100%"
+                        >
+
+                        <div
+                            class="mu"
+                            style="
+                                display: flex;
+                                justify-content: space-between;
+                            "
+                        >
+                            Ringan 5%
+                            <span>Ambisius 40%</span>
+                        </div>
+
+                        <br>
+
+                        <b style="font-size: 12px">
+                            Tarif listrik yang dipakai (Rp/kWh)
+                        </b>
+
+                        <br><br>
+
+                        <input
+                            type="number"
+                            id="tar"
+                            value="1444.7"
+                            step="0.1"
+                        >
+
+                    </div>
+
+                    <!-- Saving Summary -->
+                    <div class="dkc">
+
+                        <small>Tagihan setelah hemat</small>
+                        <b id="after2"></b>
+
+                        <small>Potensi hemat setahun</small>
+                        <b id="yr"></b>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Saving Plan -->
+            <div class="card" style="margin-top: 16px">
+
+                <h2>Rencana hemat untukmu</h2>
+
+                <div class="g3" id="plan"></div>
+
+            </div>
+
+            <!-- Information -->
+            <p
+                class="mu card"
+                style="margin-top: 16px; padding: 14px"
+            >
+                Tarif default Rp1.444,70/kWh adalah contoh untuk simulasi.
+                Cocokkan dengan golongan pelangganmu.
+            </p>
+
+        </section>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+</html>
