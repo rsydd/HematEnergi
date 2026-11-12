@@ -489,7 +489,7 @@ function readState() {
     s.tar = num(s.tar, STATE_DEFAULT.tar) || STATE_DEFAULT.tar;
 
     s.devices =
-        Array.isArray(s.devices) && s.devices.length
+        Array.isArray(s.devices)
             ? s.devices.map(d => [
                   String((d && d[0]) || "Perangkat"),
                   num(d && d[1], 0),
@@ -579,12 +579,21 @@ const D = state.devices;
 
 function rd() {
 
-    $("tb").innerHTML = D
-        .map((d, i) => `
+    const tb = document.getElementById("tb");
+
+    $("tb").innerHTML = D.length
+        ? D.map((d, i) => `
             <tr>
 
                 <td>
-                    <b>${d[0]}</b>
+                    <input
+                        type="text"
+                        class="nm"
+                        data-r="${i}"
+                        data-k="0"
+                        placeholder="Nama perangkat"
+                        autocomplete="off"
+                    >
                 </td>
 
                 ${[1, 2, 3]
@@ -593,6 +602,7 @@ function rd() {
                             <input
                                 type="number"
                                 min="0"
+                                step="any"
                                 value="${d[k]}"
                                 data-r="${i}"
                                 data-k="${k}"
@@ -615,7 +625,31 @@ function rd() {
 
             </tr>
         `)
-        .join("");
+        .join("")
+        : `
+            <tr>
+                <td colspan="6" class="mu" style="padding:18px 4px">
+                    Belum ada perangkat. Isi nama dan daya di bawah
+                    untuk menambahkannya.
+                </td>
+            </tr>
+        `;
+
+    // Nama perangkat diisi lewat properti nilai, bukan lewat string HTML,
+    // supaya karakter seperti tanda kutip tidak merusak tabel.
+    if (tb) {
+
+        D.forEach((d, i) => {
+
+            const f = tb.querySelector(
+                `input[data-r="${i}"][data-k="0"]`
+            );
+
+            if (f) f.value = d[0];
+
+        });
+
+    }
 
     calc();
 }
@@ -724,7 +758,7 @@ function calc() {
         .sort((a, b) => b[0] - a[0])
         .slice(0, 2);
 
-    const n = top.map(t => D[t[1]][0]);
+    const n = top.map(t => (D[t[1]][0] || "").trim() || "perangkat");
 
 
     // Rekomendasi penghematan
@@ -785,13 +819,14 @@ $("tb").oninput = e => {
 
     const t = e.target;
 
-    if (t.dataset.r != null) {
+    if (t.dataset.r == null) return;
 
-        D[t.dataset.r][t.dataset.k] = +t.value || 0;
+    const k = t.dataset.k;
 
-        calc();
+    // Kolom nama berisi teks, kolom lain berisi angka
+    D[t.dataset.r][k] = k == "0" ? t.value : (+t.value || 0);
 
-    }
+    calc();
 
 };
 
@@ -810,14 +845,84 @@ $("tb").onclick = e => {
 };
 
 
-// Tambah perangkat
-$("addb").onclick = () => {
+// Tambah perangkat baru: nama dan daya bebas, preset hanya membantu
+function addDevice() {
 
-    const [n, w] = $("add").value.split("|");
+    const nameEl = $("add-name");
+    const wattEl = $("add-watt");
+    const msg = $("addmsg");
 
-    D.push([n, +w, 1, 2]);
+    const name = (nameEl.value || "").trim();
+    const watt = +wattEl.value;
+
+    if (!name) {
+
+        msg.textContent = "Nama perangkat belum diisi.";
+        nameEl.focus();
+
+        return;
+
+    }
+
+    if (!(watt > 0)) {
+
+        msg.textContent = "Daya harus lebih dari 0 watt.";
+        wattEl.focus();
+
+        return;
+
+    }
+
+    D.push([name, watt, 1, 2]);
+
+    nameEl.value = "";
+    wattEl.value = "";
+    msg.textContent = "";
+
+    $("add").value = "";
 
     rd();
+
+    nameEl.focus();
+
+}
+
+$("addb").onclick = addDevice;
+
+["add-name", "add-watt"].forEach(id => {
+
+    $(id).oninput = () => {
+
+        $("addmsg").textContent = "";
+
+    };
+
+    $(id).onkeydown = e => {
+
+        if (e.key == "Enter") {
+
+            e.preventDefault();
+
+            addDevice();
+
+        }
+
+    };
+
+});
+
+// Preset cepat: hanya mengisi kolom, tetap bisa diubah sebelum ditambah
+$("add").onchange = () => {
+
+    const v = $("add").value;
+
+    if (!v) return;
+
+    const [name, watt] = v.split("|");
+
+    $("add-name").value = name;
+    $("add-watt").value = watt;
+    $("addmsg").textContent = "";
 
 };
 

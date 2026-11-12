@@ -266,9 +266,13 @@
 
                         <br>
 
-                        <div style="display: flex; gap: 10px">
+                        <div class="addbar">
 
                             <select id="add">
+
+                                <option value="">
+                                    Preset cepat (opsional)
+                                </option>
 
                                 <option value="Mesin cuci|400">
                                     Mesin cuci — ±400 W
@@ -296,19 +300,35 @@
 
                             </select>
 
-                            <button
-                                class="btn s"
-                                id="addb"
-                                style="white-space: nowrap"
-                            >
-                                + Tambah perangkat
-                            </button>
+                            <div class="addrow">
+
+                                <input
+                                    type="text"
+                                    id="add-name"
+                                    placeholder="Nama perangkat"
+                                    autocomplete="off"
+                                >
+
+                                <input
+                                    type="number"
+                                    id="add-watt"
+                                    min="1"
+                                    placeholder="Daya (W)"
+                                >
+
+                                <button class="btn s" id="addb">
+                                    + Tambah
+                                </button>
+
+                            </div>
+
+                            <p class="mu addmsg" id="addmsg"></p>
 
                         </div>
 
                         <p class="mu">
-                            Nilai watt adalah estimasi awal.
-                            Rumus: watt × jam × hari ÷ 1.000.
+                            Nama, daya, jumlah, dan jam bisa diubah langsung di
+                            tabel. Rumus: watt × jumlah × jam × 30 ÷ 1.000.
                         </p>
 
                     </div>

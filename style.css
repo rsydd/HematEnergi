@@ -385,6 +385,13 @@ body:not(.js) .pg {
     gap: 14px;
 }
 
+/* Anak grid boleh menyusut, supaya tabel lebar tidak melebarkan halaman */
+.g2 > *,
+.g3 > *,
+.g4 > * {
+    min-width: 0;
+}
+
 
 /* ========================================== */
 /* 9. CARD COMPONENT */
@@ -668,6 +675,7 @@ h2 {
 /* ========================================== */
 
 input[type=number],
+input[type=text],
 select {
     width: 100%;
 
@@ -700,12 +708,78 @@ th {
 }
 
 td {
-    padding: 8px 4px;
+    padding: 8px 3px;
     border-top: 1px solid var(--bd);
 }
 
+/* Tabel bisa di-scroll mendatar bila layar sempit, kolom tetap terbaca */
+
+.tw {
+    overflow-x: auto;
+}
+
+.tw table {
+    min-width: 392px;
+}
+
+/* Input dalam tabel dibuat lebih rapat supaya angka tetap terbaca */
 td input {
-    width: 70px;
+    width: 100%;
+    min-width: 62px;
+    max-width: 88px;
+    padding: 8px 8px;
+    text-align: center;
+}
+
+td input.nm {
+    min-width: 112px;
+    max-width: 150px;
+    text-align: left;
+}
+
+/* Sembunyikan tombol panah agar angka di tabel tidak terpotong */
+td input[type=number] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+td input[type=number]::-webkit-outer-spin-button,
+td input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+/* Add-device bar */
+
+.addbar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.addrow {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.addrow input[type=text] {
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.addrow input[type=number] {
+    flex: 0 1 108px;
+}
+
+.addrow .btn {
+    flex: 0 0 auto;
+}
+
+.addmsg {
+    margin: 0;
+    min-height: 15px;
 }
 
 
@@ -857,8 +931,8 @@ td input {
         gap: 10px;
     }
 
-    .tw {
-        overflow-x: auto;
+    .tw table {
+        min-width: 372px;
     }
 
 }
