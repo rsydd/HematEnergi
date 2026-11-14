@@ -535,6 +535,24 @@ const savings = (bill, pct) => {
 
 };
 
+const deviceSavings = (devices, tar, pct) => {
+
+    const T = devices.reduce(
+        (a, d) => a + d[1] * d[2] * d[3] * 30 / 1000, 0
+    );
+
+    const est = T * tar;
+    const hemat = est * pct / 100;
+
+    return {
+        est: est,
+        hemat: hemat,
+        after: est - hemat,
+        year: hemat * 12
+    };
+
+};
+
 
 // ==========================================
 // 13. RENDER KEBIASAAN HEMAT
@@ -714,9 +732,11 @@ function calc() {
 
     $("pot").textContent = rp(sim.hemat);
 
-    $("after2").textContent = rp(sim.after);
+    const dev = deviceSavings(D, tar, +$("rng").value);
 
-    $("yr").textContent = rp(sim.year);
+    $("after2").textContent = rp(dev.after);
+
+    $("yr").textContent = rp(dev.year);
 
 
     // Simpan seluruh isi kalkulator agar dashboard dan halaman ini
