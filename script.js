@@ -1030,7 +1030,7 @@ if (document.getElementById("d-bill")) {
 
     // Sumber data dan rumus sama persis dengan halaman kalkulator,
     // jadi angka di dashboard tidak pernah berbeda saat bolak-balik.
-    const sim = savings(state.bill, state.pct);
+    const sim = deviceSavings(state.bill, state.pct);
 
     $("d-bill").textContent = rp(sim.bill);
 
