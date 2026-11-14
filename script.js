@@ -726,17 +726,17 @@ function calc() {
 
     // Hasil simulasi tagihan, semuanya memakai dasar tagihan + target %
     // supaya angkanya sama dengan kartu di dashboard
-    //const sim = savings(bill, +$("rng").value);
-    const sim = deviceSavings(D, tar, +$("rng").value);
+    const sim = savings(bill, +$("rng").value);
+    const dev = deviceSavings(D, tar, +$("rng").value);
 
     $("after").textContent = rp(sim.after);
 
     $("pot").textContent = rp(sim.hemat);
 
     //$("after2").textContent = rp(sim.after);
-    $("after2").textContent = rp(T * tar * (1 - p));
+    $("after2").textContent = rp(dev.after);
 
-    $("yr").textContent = rp(sim.year);
+    $("yr").textContent = rp(dev.year);
 
 
     // Simpan seluruh isi kalkulator agar dashboard dan halaman ini
@@ -1030,7 +1030,7 @@ if (document.getElementById("d-bill")) {
 
     // Sumber data dan rumus sama persis dengan halaman kalkulator,
     // jadi angka di dashboard tidak pernah berbeda saat bolak-balik.
-    const sim = deviceSavings(state.bill, state.pct);
+    const sim = savings(state.bill, state.pct);
 
     $("d-bill").textContent = rp(sim.bill);
 
