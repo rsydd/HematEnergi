@@ -714,7 +714,8 @@ function calc() {
 
     $("pot").textContent = rp(sim.hemat);
 
-    $("after2").textContent = rp(sim.after);
+    //$("after2").textContent = rp(sim.after);
+    $("after2").textContent = rp(T * tar * (1 - p));
 
     $("yr").textContent = rp(sim.year);
 
