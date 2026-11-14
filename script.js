@@ -535,6 +535,24 @@ const savings = (bill, pct) => {
 
 };
 
+const deviceSavings = (devices, tar, pct) => {
+
+    const T = devices.reduce(
+        (a, d) => a + d[1] * d[2] * d[3] * 30 / 1000, 0
+    );
+
+    const est = T * tar;
+    const hemat = est * pct / 100;
+
+    return {
+        est: est,
+        hemat: hemat,
+        after: est - hemat,
+        year: hemat * 12
+    };
+
+};
+
 
 // ==========================================
 // 13. RENDER KEBIASAAN HEMAT
@@ -708,7 +726,8 @@ function calc() {
 
     // Hasil simulasi tagihan, semuanya memakai dasar tagihan + target %
     // supaya angkanya sama dengan kartu di dashboard
-    const sim = savings(bill, +$("rng").value);
+    //const sim = savings(bill, +$("rng").value);
+    const sim = deviceSavings(D, tar, +$("rng").value);
 
     $("after").textContent = rp(sim.after);
 
